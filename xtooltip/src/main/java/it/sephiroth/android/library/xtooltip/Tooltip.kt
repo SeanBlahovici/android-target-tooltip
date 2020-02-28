@@ -649,7 +649,7 @@ class Tooltip private constructor(private val context: Context, builder: Builder
         if (isShowing && mPopupView != null) {
             removeListeners(mAnchorView?.get())
             removeCallbacks()
-            windowManager.removeView(mPopupView)
+            windowManager.removeViewImmediate(mPopupView)
             Timber.v("dismiss: $mPopupView")
             mPopupView = null
             isShowing = false
