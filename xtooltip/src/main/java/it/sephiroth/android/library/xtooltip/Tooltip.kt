@@ -654,6 +654,7 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 
 	fun dismissSilently() {
 		if (isShowing && mPopupView != null) {
+			Timber.i("Dismissing without calling on hidden function")
 			dismissInternal()
 		}
 	}
