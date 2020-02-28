@@ -646,20 +646,29 @@ class Tooltip private constructor(private val context: Context, builder: Builder
     }
 
     fun dismiss() {
-        if (isShowing && mPopupView != null) {
-            removeListeners(mAnchorView?.get())
-            removeCallbacks()
-            windowManager.removeViewImmediate(mPopupView)
-            Timber.v("dismiss: $mPopupView")
-            mPopupView = null
-            isShowing = false
-            isVisible = false
+		if (isShowing && mPopupView != null) {
+			dismissInternal()
+			mHiddenFunc?.invoke(this)
+		}
+	}
 
-            mHiddenFunc?.invoke(this)
-        }
-    }
+	fun dismissSilently() {
+		if (isShowing && mPopupView != null) {
+			dismissInternal()
+		}
+	}
 
-    private fun removeCallbacks() {
+	private fun dismissInternal() {
+		removeListeners(mAnchorView?.get())
+		removeCallbacks()
+		windowManager.removeViewImmediate(mPopupView)
+		Timber.v("dismiss: $mPopupView")
+		mPopupView = null
+		isShowing = false
+		isVisible = false
+	}
+
+	private fun removeCallbacks() {
         mHandler.removeCallbacks(hideRunnable)
         mHandler.removeCallbacks(activateRunnable)
     }
