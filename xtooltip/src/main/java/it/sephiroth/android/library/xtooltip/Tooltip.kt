@@ -570,14 +570,6 @@ class Tooltip private constructor(private val context: Context, builder: Builder
         get() = mCurrentPosition?.mOffsetY ?: kotlin.run { 0f }
 
     private fun setupListeners(anchorView: View) {
-        anchorView.addOnAttachStateChangeListener {
-            onViewDetachedFromWindow { view: View?, listener: View.OnAttachStateChangeListener ->
-                Timber.i("anchorView detached from parent")
-                view?.removeOnAttachStateChangeListener(listener)
-                dismiss()
-            }
-        }
-
         if (mFollowAnchor) {
             anchorView.viewTreeObserver.addOnPreDrawListener(predrawListener)
         }
