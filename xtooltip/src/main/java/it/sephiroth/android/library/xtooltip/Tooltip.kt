@@ -774,11 +774,11 @@ class Tooltip private constructor(private val context: Context, builder: Builder
             } else if (mClosePolicy.outside() && !tooltipContainsTouch) {
                 hide()
             } else if(mClosePolicy.insideOrTouchAnchor() && (tooltipContainsTouch || anchorContainsTouch)) {
-            	hide()
+	            hide()
 	            if(tooltipContainsTouch)
-	            	return mClosePolicy.consume()
+	            	return true
 	            else if(anchorContainsTouch)
-	            	return !mClosePolicy.consume()
+	            	return false
             }
 
             return mClosePolicy.consume()
@@ -1026,7 +1026,6 @@ class ClosePolicy internal constructor(private val policy: Int) {
         val TOUCH_OUTSIDE_NO_CONSUME = ClosePolicy(TOUCH_OUTSIDE)
         val TOUCH_ANYWHERE_NO_CONSUME = ClosePolicy(TOUCH_INSIDE or TOUCH_OUTSIDE)
         val TOUCH_ANYWHERE_CONSUME = ClosePolicy(TOUCH_INSIDE or TOUCH_OUTSIDE or CONSUME)
-	    val TOUCH_INSIDE_OR_ANCHOR_WITH_CONSUME_ON_TOOLTIP = ClosePolicy(TOUCH_INSIDE or TOUCH_ANCHOR or CONSUME)
+	    val TOUCH_INSIDE_OR_ANCHOR_WITH_CONSUME_ON_TOOLTIP = ClosePolicy(TOUCH_INSIDE or TOUCH_ANCHOR)
     }
-
 }
