@@ -709,6 +709,8 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 		init {
 			clipChildren = false
 			clipToPadding = false
+			isClickable = true
+			isFocusable = true
 		}
 
 		private var sizeChange: ((w: Int, h: Int) -> Unit)? = null
@@ -762,19 +764,8 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 			mTextView.getGlobalVisibleRect(r1)
 			val tooltipContainsTouch = r1.contains(event.x.toInt(), event.y.toInt())
 
-			Timber.d("SEAN TOOLTIPS - TOOLTIP RECT : $r1")
-
-			val targetRect = Rect()
-			mAnchorView?.get()?.getGlobalVisibleRect(targetRect)
-			val anchorContainsTouch = targetRect.contains(event.x.toInt(), event.y.toInt())
-
-			Timber.d("SEAN TOOLTIPS - ANCHOR RECT : $targetRect")
-
-			Timber.i("onTouchEvent: $event")
-			Timber.d("event position: ${event.x}, ${event.y}")
-
 			if (mClosePolicy.insideOrTouchAnchor())
-				return handleTouchWhenInsideOrTouchAnchorEnabled(anchorContainsTouch, tooltipContainsTouch)
+				return handleTouchWhenInsideOrTouchAnchorEnabled(event)
 
 			if (mClosePolicy.anywhere()) {
 				hide()
@@ -788,23 +779,43 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 		}
 	}
 
-	private fun handleTouchWhenInsideOrTouchAnchorEnabled(anchorContainsTouch: Boolean, tooltipContainsTouch: Boolean): Boolean =
-			when {
-				anchorContainsTouch -> {
-					Timber.d("SEAN TOOLTIPS - Anchor contains touch, NOT CONSUMING!")
-					hide()
-					false
-				}
-				tooltipContainsTouch -> {
-					Timber.d("SEAN TOOLTIPS - Touched TOOLTIP, CONSUMING!")
-					hide()
-					true
-				}
-				else -> {
-					Timber.d("SEAN TOOLTIPS - Touched ANYWHERE ELSE, NOT CONSUMING!")
-					false
-				}
+	private fun handleTouchWhenInsideOrTouchAnchorEnabled(event: MotionEvent): Boolean {
+		val textViewRect = Rect()
+		mPopupView?.getGlobalVisibleRect(textViewRect)
+		Timber.d("SEAN TOOLTIPS - TOOLTIP TEXT RECT : $textViewRect")
+
+		val popupRect = Rect()
+		mPopupView?.getGlobalVisibleRect(popupRect)
+		val tooltipPopupContainsTouch = popupRect.contains(event.x.toInt(), event.y.toInt())
+
+		Timber.d("SEAN TOOLTIPS - TOOLTIP POPUP RECT : $popupRect")
+
+		val targetRect = Rect()
+		mAnchorView?.get()?.getGlobalVisibleRect(targetRect)
+		val anchorContainsTouch = targetRect.contains(event.x.toInt(), event.y.toInt())
+
+		Timber.d("SEAN TOOLTIPS - ANCHOR RECT : $targetRect")
+
+		Timber.i("onTouchEvent: $event")
+		Timber.d("event position: ${event.x}, ${event.y}")
+
+		return when {
+			anchorContainsTouch -> {
+				Timber.d("SEAN TOOLTIPS - Anchor contains touch, NOT CONSUMING!")
+				hide()
+				false
 			}
+			tooltipPopupContainsTouch -> {
+				Timber.d("SEAN TOOLTIPS - Touched TOOLTIP, CONSUMING!")
+				hide()
+				true
+			}
+			else -> {
+				Timber.d("SEAN TOOLTIPS - Touched ANYWHERE ELSE, NOT CONSUMING!")
+				false
+			}
+		}
+	}
 
 	private data class Positions(
 			val displayFrame: Rect,
