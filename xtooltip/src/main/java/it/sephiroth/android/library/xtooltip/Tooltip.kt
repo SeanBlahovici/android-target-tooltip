@@ -307,7 +307,10 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 					LayoutInflater.from(context).inflate(mTooltipLayoutIdRes, viewContainer, false)
 
 			if (!mIsCustomView) {
-				mTextView = AppCompatTextView(ContextThemeWrapper(context, mTextStyleResId))
+				mTextView = AppCompatTextView(ContextThemeWrapper(context, mTextStyleResId)).also {
+					it.isClickable = true
+					it.isFocusable = true
+				}
 				mTextView.id = android.R.id.text1
 				(contentView as ViewGroup).addView(mTextView)
 			}
@@ -709,8 +712,6 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 		init {
 			clipChildren = false
 			clipToPadding = false
-			isClickable = true
-			isFocusable = true
 		}
 
 		private var sizeChange: ((w: Int, h: Int) -> Unit)? = null
@@ -781,22 +782,15 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 
 	private fun handleTouchWhenInsideOrTouchAnchorEnabled(event: MotionEvent): Boolean {
 		val textViewRect = Rect()
-		mPopupView?.getGlobalVisibleRect(textViewRect)
-		Timber.d("SEAN TOOLTIPS - TOOLTIP TEXT RECT : $textViewRect")
-
-		val popupRect = Rect()
-		mPopupView?.getGlobalVisibleRect(popupRect)
-		val tooltipPopupContainsTouch = popupRect.contains(event.x.toInt(), event.y.toInt())
-
-		Timber.d("SEAN TOOLTIPS - TOOLTIP POPUP RECT : $popupRect")
+		mTextView.getGlobalVisibleRect(textViewRect)
+		val tooltipContainsTouch = textViewRect.contains(event.x.toInt(), event.y.toInt())
 
 		val targetRect = Rect()
 		mAnchorView?.get()?.getGlobalVisibleRect(targetRect)
 		val anchorContainsTouch = targetRect.contains(event.x.toInt(), event.y.toInt())
 
+		Timber.d("SEAN TOOLTIPS - TOOLTIP RECT : $textViewRect")
 		Timber.d("SEAN TOOLTIPS - ANCHOR RECT : $targetRect")
-
-		Timber.i("onTouchEvent: $event")
 		Timber.d("event position: ${event.x}, ${event.y}")
 
 		return when {
@@ -805,7 +799,7 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 				hide()
 				false
 			}
-			tooltipPopupContainsTouch -> {
+			tooltipContainsTouch -> {
 				Timber.d("SEAN TOOLTIPS - Touched TOOLTIP, CONSUMING!")
 				hide()
 				true
