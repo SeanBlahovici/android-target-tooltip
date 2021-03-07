@@ -763,12 +763,18 @@ class Tooltip private constructor(private val context: Context, builder: Builder
             mTextView.getGlobalVisibleRect(r1)
             val containsTouch = r1.contains(event.x.toInt(), event.y.toInt())
 
+	        val targetRect = Rect()
+	        mAnchorView?.get()?.getGlobalVisibleRect(targetRect)
+	        val anchorContainsTouch = targetRect.contains(event.x.toInt(), event.y.toInt())
+
             if (mClosePolicy.anywhere()) {
                 hide()
             } else if (mClosePolicy.inside() && containsTouch) {
                 hide()
             } else if (mClosePolicy.outside() && !containsTouch) {
                 hide()
+            } else if(mClosePolicy.insideOrTouchAnchor() && (containsTouch || anchorContainsTouch)) {
+            	hide()
             }
 
             return mClosePolicy.consume()
@@ -963,7 +969,13 @@ class ClosePolicy internal constructor(private val policy: Int) {
         return policy and TOUCH_OUTSIDE == TOUCH_OUTSIDE
     }
 
+	fun touchTarget() : Boolean {
+		return policy and TOUCH_ANCHOR == TOUCH_ANCHOR
+	}
+
     fun anywhere() = inside() and outside()
+
+	fun insideOrTouchAnchor() = inside() and touchTarget()
 
     override fun toString(): String {
         return "ClosePolicy{policy: $policy, inside:${inside()}, outside: ${outside()}, anywhere: ${anywhere()}, consume: ${consume()}}"
@@ -1001,6 +1013,7 @@ class ClosePolicy internal constructor(private val policy: Int) {
         private const val TOUCH_INSIDE = 1 shl 1
         private const val TOUCH_OUTSIDE = 1 shl 2
         private const val CONSUME = 1 shl 3
+        private const val TOUCH_ANCHOR = 1 shl 4
 
         val TOUCH_NONE = ClosePolicy(NONE)
         val TOUCH_INSIDE_CONSUME = ClosePolicy(TOUCH_INSIDE or CONSUME)
@@ -1009,6 +1022,7 @@ class ClosePolicy internal constructor(private val policy: Int) {
         val TOUCH_OUTSIDE_NO_CONSUME = ClosePolicy(TOUCH_OUTSIDE)
         val TOUCH_ANYWHERE_NO_CONSUME = ClosePolicy(TOUCH_INSIDE or TOUCH_OUTSIDE)
         val TOUCH_ANYWHERE_CONSUME = ClosePolicy(TOUCH_INSIDE or TOUCH_OUTSIDE or CONSUME)
+	    val TOUCH_INSIDE_OR_ANCHOR_CONSUME = ClosePolicy(TOUCH_INSIDE or TOUCH_ANCHOR or CONSUME)
     }
 
 }
