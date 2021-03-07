@@ -761,7 +761,7 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 
             val r1 = Rect()
             mTextView.getGlobalVisibleRect(r1)
-            val containsTouch = r1.contains(event.x.toInt(), event.y.toInt())
+            val tooltipContainsTouch = r1.contains(event.x.toInt(), event.y.toInt())
 
 	        val targetRect = Rect()
 	        mAnchorView?.get()?.getGlobalVisibleRect(targetRect)
@@ -769,12 +769,16 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 
             if (mClosePolicy.anywhere()) {
                 hide()
-            } else if (mClosePolicy.inside() && containsTouch) {
+            } else if (mClosePolicy.inside() && tooltipContainsTouch) {
                 hide()
-            } else if (mClosePolicy.outside() && !containsTouch) {
+            } else if (mClosePolicy.outside() && !tooltipContainsTouch) {
                 hide()
-            } else if(mClosePolicy.insideOrTouchAnchor() && (containsTouch || anchorContainsTouch)) {
+            } else if(mClosePolicy.insideOrTouchAnchor() && (tooltipContainsTouch || anchorContainsTouch)) {
             	hide()
+	            if(tooltipContainsTouch)
+	            	return mClosePolicy.consume()
+	            else if(anchorContainsTouch)
+	            	return !mClosePolicy.consume()
             }
 
             return mClosePolicy.consume()
@@ -1022,7 +1026,7 @@ class ClosePolicy internal constructor(private val policy: Int) {
         val TOUCH_OUTSIDE_NO_CONSUME = ClosePolicy(TOUCH_OUTSIDE)
         val TOUCH_ANYWHERE_NO_CONSUME = ClosePolicy(TOUCH_INSIDE or TOUCH_OUTSIDE)
         val TOUCH_ANYWHERE_CONSUME = ClosePolicy(TOUCH_INSIDE or TOUCH_OUTSIDE or CONSUME)
-	    val TOUCH_INSIDE_OR_ANCHOR_CONSUME = ClosePolicy(TOUCH_INSIDE or TOUCH_ANCHOR or CONSUME)
+	    val TOUCH_INSIDE_OR_ANCHOR_WITH_CONSUME_ON_TOOLTIP = ClosePolicy(TOUCH_INSIDE or TOUCH_ANCHOR or CONSUME)
     }
 
 }
