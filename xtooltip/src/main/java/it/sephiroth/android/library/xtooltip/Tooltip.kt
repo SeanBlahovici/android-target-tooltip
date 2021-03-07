@@ -775,10 +775,13 @@ class Tooltip private constructor(private val context: Context, builder: Builder
                 hide()
             } else if(mClosePolicy.insideOrTouchAnchor() && (tooltipContainsTouch || anchorContainsTouch)) {
 	            hide()
-	            if(tooltipContainsTouch)
-	            	return true
-	            else if(anchorContainsTouch)
-	            	return false
+	            if(tooltipContainsTouch) {
+		            Timber.d("Tooltip contains touch, consuming!")
+		            return true
+	            } else if(anchorContainsTouch) {
+		            Timber.d("Anchor contains touch, NOT consuming!")
+		            return false
+	            }
             }
 
             return mClosePolicy.consume()
