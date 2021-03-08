@@ -204,6 +204,7 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 	private var mPrepareFun: ((tooltip: Tooltip) -> Unit)? = null
 	private var mShownFunc: ((tooltip: Tooltip) -> Unit)? = null
 	private var mHiddenFunc: ((tooltip: Tooltip) -> Unit)? = null
+	private var onEventOutsideOfTooltip: ((event: MotionEvent) -> Unit)? = null
 
 	@Suppress("UNUSED")
 	fun doOnFailure(func: ((tooltip: Tooltip) -> Unit)?): Tooltip {
@@ -226,6 +227,12 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 	@Suppress("UNUSED")
 	fun doOnHidden(func: ((tooltip: Tooltip) -> Unit)?): Tooltip {
 		mHiddenFunc = func
+		return this
+	}
+
+	@Suppress("UNUSED")
+	fun doOnEventOutsideOfTooltip(func: (event: MotionEvent) -> Unit): Tooltip {
+		onEventOutsideOfTooltip = func
 		return this
 	}
 
@@ -297,9 +304,7 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 				mViewOverlay = TooltipOverlay(context, 0, mOverlayStyle)
 				with(mViewOverlay!!) {
 					adjustViewBounds = true
-					layoutParams = ViewGroup.LayoutParams(
-							ViewGroup.LayoutParams.WRAP_CONTENT,
-							ViewGroup.LayoutParams.WRAP_CONTENT)
+					layoutParams = ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
 				}
 			}
 
@@ -307,10 +312,7 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 					LayoutInflater.from(context).inflate(mTooltipLayoutIdRes, viewContainer, false)
 
 			if (!mIsCustomView) {
-				mTextView = AppCompatTextView(ContextThemeWrapper(context, mTextStyleResId)).also {
-					it.isClickable = true
-					it.isFocusable = true
-				}
+				mTextView = AppCompatTextView(ContextThemeWrapper(context, mTextStyleResId))
 				mTextView.id = android.R.id.text1
 				(contentView as ViewGroup).addView(mTextView)
 			}
@@ -642,7 +644,7 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 		fadeOut()
 	}
 
-	fun dismiss() {
+	private fun dismiss() {
 		if (isShowing && mPopupView != null) {
 			dismissInternal()
 			mHiddenFunc?.invoke(this)
@@ -761,6 +763,8 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 		override fun onTouchEvent(event: MotionEvent): Boolean {
 			if (!isShowing || !isVisible || !mActivated) return false
 
+			Timber.d("event position: ${event.x}, ${event.y}")
+
 			val r1 = Rect()
 			mTextView.getGlobalVisibleRect(r1)
 			val tooltipContainsTouch = r1.contains(event.x.toInt(), event.y.toInt())
@@ -789,23 +793,20 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 		mAnchorView?.get()?.getGlobalVisibleRect(targetRect)
 		val anchorContainsTouch = targetRect.contains(event.x.toInt(), event.y.toInt())
 
-		Timber.d("SEAN TOOLTIPS - TOOLTIP RECT : $textViewRect")
-		Timber.d("SEAN TOOLTIPS - ANCHOR RECT : $targetRect")
-		Timber.d("event position: ${event.x}, ${event.y}")
-
 		return when {
 			anchorContainsTouch -> {
-				Timber.d("SEAN TOOLTIPS - Anchor contains touch, NOT CONSUMING!")
-				hide()
+				if(event.action == MotionEvent.ACTION_UP)
+					dismiss()
+				onEventOutsideOfTooltip?.invoke(event)
 				false
 			}
 			tooltipContainsTouch -> {
-				Timber.d("SEAN TOOLTIPS - Touched TOOLTIP, CONSUMING!")
-				hide()
+				if(event.action == MotionEvent.ACTION_UP)
+					hide()
 				true
 			}
 			else -> {
-				Timber.d("SEAN TOOLTIPS - Touched ANYWHERE ELSE, NOT CONSUMING!")
+				onEventOutsideOfTooltip?.invoke(event)
 				false
 			}
 		}
@@ -1009,7 +1010,7 @@ class ClosePolicy internal constructor(private val policy: Int) {
 	fun insideOrTouchAnchor() = inside() and touchTarget()
 
 	override fun toString(): String {
-		return "ClosePolicy{policy: $policy, inside:${inside()}, outside: ${outside()}, anywhere: ${anywhere()}, consume: ${consume()}}"
+		return "ClosePolicy{policy: $policy, inside:${inside()}, outside: ${outside()}, anywhere: ${anywhere()}, touchTarget : ${touchTarget()}, consume: ${consume()}}"
 	}
 
 	@Suppress("unused")
@@ -1053,6 +1054,6 @@ class ClosePolicy internal constructor(private val policy: Int) {
 		val TOUCH_OUTSIDE_NO_CONSUME = ClosePolicy(TOUCH_OUTSIDE)
 		val TOUCH_ANYWHERE_NO_CONSUME = ClosePolicy(TOUCH_INSIDE or TOUCH_OUTSIDE)
 		val TOUCH_ANYWHERE_CONSUME = ClosePolicy(TOUCH_INSIDE or TOUCH_OUTSIDE or CONSUME)
-		val TOUCH_INSIDE_OR_ANCHOR_WITH_CONSUME_ON_TOOLTIP = ClosePolicy(TOUCH_INSIDE or TOUCH_ANCHOR)
+		val TOUCH_INSIDE_OR_ANCHOR_WITH_CONSUME_ON_TOOLTIP = ClosePolicy(TOUCH_INSIDE or TOUCH_ANCHOR or CONSUME)
 	}
 }

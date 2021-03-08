@@ -248,8 +248,13 @@ internal class TooltipTextDrawable(context: Context, builder: Tooltip.Builder) :
             var drawPoint = false
             tmpPoint.set(point.x, point.y)
 
+	        val convertedTop = top.toDouble()
+	        val convertedBottom = bottom.toDouble()
+	        val convertedLeft = left.toDouble()
+	        val convertedRight = right.toDouble()
+
             if (gravity == Tooltip.Gravity.RIGHT || gravity == Tooltip.Gravity.LEFT) {
-                if (tmpPoint.y in top..bottom) {
+                if (tmpPoint.y in convertedTop..convertedBottom) {
                     if (top + tmpPoint.y + arrowWeight > maxY) {
                         tmpPoint.y = (maxY - arrowWeight.toFloat() - top.toFloat())
                     } else if (top + tmpPoint.y - arrowWeight < minY) {
@@ -258,15 +263,13 @@ internal class TooltipTextDrawable(context: Context, builder: Tooltip.Builder) :
                     drawPoint = true
                 }
             } else {
-                if (tmpPoint.x in left..right) {
-                    if (tmpPoint.x in left..right) {
-                        if (left + tmpPoint.x + arrowWeight > maxX) {
-                            tmpPoint.x = (maxX - arrowWeight.toFloat() - left.toFloat())
-                        } else if (left + tmpPoint.x - arrowWeight < minX) {
-                            tmpPoint.x = (minX + arrowWeight - left)
-                        }
-                        drawPoint = true
+                if (tmpPoint.x in convertedLeft..convertedRight) {
+                    if (left + tmpPoint.x + arrowWeight > maxX) {
+                        tmpPoint.x = (maxX - arrowWeight.toFloat() - left.toFloat())
+                    } else if (left + tmpPoint.x - arrowWeight < minX) {
+                        tmpPoint.x = (minX + arrowWeight - left)
                     }
+                    drawPoint = true
                 }
             }
             Timber.v("tmpPoint: $tmpPoint")
