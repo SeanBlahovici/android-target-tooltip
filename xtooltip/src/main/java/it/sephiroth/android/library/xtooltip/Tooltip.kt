@@ -117,6 +117,11 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 				if (isShowing && null != mPopupView) {
 					view.getLocationOnScreen(mNewLocation)
 
+					if(mNewLocation.first() == 0 && mNewLocation.last() == 0) {
+						dismissSilently()
+						return@OnPreDrawListener true
+					}
+
 					if (mOldLocation == null) {
 						mOldLocation = intArrayOf(mNewLocation[0], mNewLocation[1])
 					}
