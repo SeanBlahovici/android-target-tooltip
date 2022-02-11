@@ -1,3 +1,10 @@
+@file:Suppress("RemoveRedundantCallsOfConversionMethods", "RemoveRedundantCallsOfConversionMethods",
+    "RemoveRedundantCallsOfConversionMethods", "RemoveRedundantCallsOfConversionMethods", "RemoveRedundantCallsOfConversionMethods",
+    "RemoveRedundantCallsOfConversionMethods", "RemoveRedundantCallsOfConversionMethods", "RemoveRedundantCallsOfConversionMethods",
+    "RemoveRedundantCallsOfConversionMethods", "RemoveRedundantCallsOfConversionMethods", "RemoveRedundantCallsOfConversionMethods",
+    "RemoveRedundantCallsOfConversionMethods"
+)
+
 package it.sephiroth.android.library.xtooltip
 
 

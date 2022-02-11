@@ -1,3 +1,7 @@
+@file:Suppress("SuspiciousVarProperty", "SuspiciousVarProperty", "SuspiciousVarProperty", "SuspiciousVarProperty", "SuspiciousVarProperty",
+	"SuspiciousVarProperty"
+)
+
 package it.sephiroth.android.library.xtooltip
 
 import android.animation.ObjectAnimator
@@ -24,7 +28,6 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.HtmlCompat
 import androidx.core.view.setPadding
-import kotlinx.android.synthetic.main.textview.view.*
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.util.*
@@ -59,7 +62,6 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 
 	private val mLayoutInsetDecor = true
 	private val mWindowLayoutType = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
-	private val mSoftInputMode = INPUT_METHOD_NOT_NEEDED
 	private val mHandler = Handler()
 
 	private var mPopupView: TooltipViewContainer? = null
@@ -267,7 +269,7 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 		p.flags = computeFlags(p.flags)
 		p.type = mWindowLayoutType
 		p.token = token
-		p.softInputMode = mSoftInputMode
+		p.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
 		p.title = "ToolTip:" + Integer.toHexString(hashCode())
 //        p.windowAnimations = mAnimationStyleResId
 		return p
