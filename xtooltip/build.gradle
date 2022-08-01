@@ -5,11 +5,11 @@ group "it.sephiroth.android.library.targettooltip"
 version "2.0.5"
 
 android {
-    compileSdkVersion 28 as int
+    compileSdkVersion 32 as int
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 28 as int
+        targetSdkVersion 32 as int
         versionCode 106 as int
         versionName "2.0.5"
 
@@ -32,13 +32,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.core:core-ktx:1.0.1'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.31"
-
-    testImplementation "androidx.test.ext:junit:1.1.0"
-
-    androidTestImplementation "androidx.test.ext:junit:1.1.0"
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10"
 }
