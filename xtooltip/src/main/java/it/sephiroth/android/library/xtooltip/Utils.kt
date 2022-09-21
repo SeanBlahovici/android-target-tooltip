@@ -3,7 +3,6 @@ package it.sephiroth.android.library.xtooltip
 import android.animation.Animator
 import android.graphics.Rect
 import android.view.View
-import android.view.ViewPropertyAnimator
 import android.view.animation.Animation
 
 /**
@@ -47,22 +46,13 @@ internal class AttachStateChangeListener : View.OnAttachStateChangeListener {
         _onViewAttachedToWindow = func
     }
 
-    override fun onViewDetachedFromWindow(v: View?) {
-        _onViewDetachedFromWindow?.invoke(v, this)
+    override fun onViewDetachedFromWindow(p0: View) {
+        _onViewDetachedFromWindow?.invoke(p0, this)
     }
 
-    override fun onViewAttachedToWindow(v: View?) {
-        _onViewAttachedToWindow?.invoke(v, this)
+    override fun onViewAttachedToWindow(p0: View) {
+        _onViewAttachedToWindow?.invoke(p0, this)
     }
-}
-
-internal inline fun ViewPropertyAnimator.setListener(
-        func: ViewPropertyAnimatorListener.() -> Unit
-): ViewPropertyAnimator {
-    val listener = ViewPropertyAnimatorListener()
-    listener.func()
-    setListener(listener)
-    return this
 }
 
 internal inline fun Animation.setListener(func: AnimationListener.() -> Unit): Animation {
@@ -92,15 +82,6 @@ internal class AnimationListener : Animation.AnimationListener {
     fun onAnimationEnd(func: (animation: Animation?) -> Unit) {
         _onAnimationEnd = func
     }
-
-    fun onAnimationRepeat(func: (animation: Animation?) -> Unit) {
-        _onAnimationRepeat = func
-    }
-
-    fun onAnimationStart(func: (animation: Animation?) -> Unit) {
-        _onAnimationStart = func
-    }
-
 }
 
 @Suppress("unused")
