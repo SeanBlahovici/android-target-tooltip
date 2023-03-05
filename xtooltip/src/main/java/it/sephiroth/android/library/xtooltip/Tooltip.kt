@@ -13,12 +13,10 @@ import android.os.Handler
 import android.os.IBinder
 import android.text.Spannable
 import android.view.*
-import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
-import android.widget.PopupWindow.INPUT_METHOD_NOT_NEEDED
 import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
@@ -548,7 +546,6 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 	@Suppress("SpellCheckingInspection")
 	fun offsetBy(xoff: Float, yoff: Float) {
 		if (isShowing && mPopupView != null && mCurrentPosition != null) {
-			Timber.i("offsetBy($xoff, $yoff)")
 			mCurrentPosition!!.offsetBy(xoff, yoff)
 
 			mContentView.translationX = mCurrentPosition!!.contentPointX
