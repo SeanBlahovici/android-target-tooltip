@@ -54,7 +54,7 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 	var isShowing = false
 		private set
 
-	private val mGravities = Gravity.values().filter { it != Gravity.CENTER }
+	private val mGravities = Gravity.entries.filter { it != Gravity.CENTER }
 	private var isVisible = false
 	private val mSizeTolerance = context.resources.displayMetrics.density * 10
 
