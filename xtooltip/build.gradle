@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
 group "it.sephiroth.android.library.targettooltip"
 version "2.0.5"
