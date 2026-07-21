@@ -58,7 +58,6 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 	private var isVisible = false
 	private val mSizeTolerance = context.resources.displayMetrics.density * 10
 
-	private val mLayoutInsetDecor = true
 	private val mWindowLayoutType = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
 	private val mHandler = Handler()
 
@@ -533,7 +532,7 @@ class Tooltip private constructor(private val context: Context, builder: Builder
 			offsetBy(0f, 0f)
 
 			it.params.packageName = context.packageName
-			mPopupView?.fitsSystemWindows = mLayoutInsetDecor
+			mPopupView?.fitsSystemWindows = false
 			windowManager.addView(mPopupView, it.params)
 			fadeIn()
 			return this
